@@ -1,8 +1,9 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestApplication, NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestApplication, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 import { certificateConfig } from '../secrets/certificates';
 import { AppModule } from './app.module';
@@ -13,12 +14,14 @@ async function bootstrap() {
   });
   const config = app.get(ConfigService);
   const apiGlobalPrefix = `${config.get<string>('apiPrefix')}/${config.get<string>('apiVersion')}`;
+  const { httpAdapter } = app.get(HttpAdapterHost);
 
   const port = config.get<number>('port');
   const host = config.get<string>('host');
 
   app.enableCors();
   app.setGlobalPrefix(apiGlobalPrefix);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Magermoney API')
