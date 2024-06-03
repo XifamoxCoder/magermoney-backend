@@ -3,10 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { NestApplication, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
+import { certificateConfig } from '../secrets/certificates';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    httpsOptions: { ...certificateConfig },
+  });
   const config = app.get(ConfigService);
 
   const port = config.get<number>('port');
@@ -14,9 +17,6 @@ async function bootstrap() {
 
   await app.listen(port, host);
 
-  Logger.log(
-    `Application is running on http://${host}:${port}`,
-    NestApplication.name,
-  );
+  Logger.log(`Application is running on https://${host}:${port}`, NestApplication.name);
 }
 bootstrap();
