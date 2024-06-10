@@ -28,6 +28,14 @@ export class UsersService {
     return user;
   }
 
+  public async findOneByEmailOrPhone(email: string, phone: string) {
+    return this.prisma.users.findFirst({
+      where: {
+        OR: [{ email }, { phone }],
+      },
+    });
+  }
+
   public async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
     return this.prisma.users.update({ where: { id: user.id }, data: updateUserDto });

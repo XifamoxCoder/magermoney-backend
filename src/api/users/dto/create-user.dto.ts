@@ -27,7 +27,7 @@ export class CreateUserDto {
   @ApiProperty({ required: false })
   @IsLocale()
   @IsOptional()
-  public readonly language: string;
+  public readonly language?: string;
 
   @ApiProperty({ required: false })
   @IsString()
