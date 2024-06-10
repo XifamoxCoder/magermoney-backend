@@ -4,6 +4,7 @@ import { PrismaModule } from 'nestjs-prisma';
 
 import { ApiModule } from '@/api/api.module';
 import { appConfig, databaseConfig, smtpConfig } from '@/config';
+import { SharedModule } from '@/shared/shared.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +19,7 @@ import { AppService } from './app.service';
       isGlobal: true,
     }),
     ApiModule,
+    SharedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

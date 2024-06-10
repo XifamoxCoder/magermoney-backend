@@ -18,7 +18,7 @@ import { NotifierModule } from '@/modules/notifier/notifier.module';
     PassportModule,
     JwtModule.registerAsync({
       useFactory: async (config: ConfigService) => ({
-        secret: config.get<string>('jwtStrategy'),
+        secret: config.get<string>('jwtSecret'),
         signOptions: { expiresIn: '604800s' },
       }),
       inject: [ConfigService],

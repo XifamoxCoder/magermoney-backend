@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 
 import { CreateUserDto } from '@/api/users/dto/create-user.dto';
 import { UpdateUserDto } from '@/api/users/dto/update-user.dto';
+import { RequestContext } from '@/shared/types';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,11 @@ export class UsersService {
     return this.prisma.users.findMany();
   }
 
-  public async findOne(id: number) {
+  public async findOne(req: RequestContext, id: number) {
+    const { id: userId } = req.user;
+
+    if (userId !== id) throw new ForbiddenException(`You don't have permission to access this resource`);
+
     const user = await this.prisma.users.findUnique({ where: { id } });
 
     if (!user) throw new NotFoundException('User not found');
@@ -36,13 +41,13 @@ export class UsersService {
     });
   }
 
-  public async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.findOne(id);
+  public async update(req: RequestContext, id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(req, id);
     return this.prisma.users.update({ where: { id: user.id }, data: updateUserDto });
   }
 
-  public async remove(id: number) {
-    const user = await this.findOne(id);
+  public async remove(req: RequestContext, id: number) {
+    const user = await this.findOne(req, id);
     return this.prisma.users.delete({ where: { id: user.id } });
   }
 }

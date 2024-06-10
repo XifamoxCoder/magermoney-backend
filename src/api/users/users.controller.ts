@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { $Enums } from '@prisma/client';
 
 import { CreateUserDto } from '@/api/users/dto/create-user.dto';
 import { UpdateUserDto } from '@/api/users/dto/update-user.dto';
 import { UserEntity } from '@/api/users/entities/user.entity';
 import { UsersService } from '@/api/users/users.service';
+import { Roles } from '@/shared/decorators';
+import { RequestContext } from '@/shared/types';
 
 const controllerName = 'users';
 
@@ -21,6 +24,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles($Enums.Role.ADMIN)
   @ApiOkResponse({ type: UserEntity, isArray: true })
   findAll() {
     return this.usersService.findAll();
@@ -28,19 +32,19 @@ export class UsersController {
 
   @Get(':id')
   @ApiOkResponse({ type: UserEntity })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Request() req: RequestContext, @Param('id') id: string) {
+    return this.usersService.findOne(req, +id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: UserEntity })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Request() req: RequestContext, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(req, +id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: UserEntity })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Request() req: RequestContext, @Param('id') id: string) {
+    return this.usersService.remove(req, +id);
   }
 }
