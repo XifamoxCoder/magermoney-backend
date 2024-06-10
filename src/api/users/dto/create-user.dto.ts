@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsEmail,
   IsISO4217CurrencyCode,
-  IsISO8601,
   IsLocale,
   IsOptional,
   IsPhoneNumber,
